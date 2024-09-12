@@ -1,120 +1,118 @@
 package com.example.app_vagas
 
 import android.os.Bundle
-import android.view.View
-import android.widget.AdapterView
+import android.view.LayoutInflater
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.RecyclerView
-import androidx.fragment.app.Fragment
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Spinner
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.app_vagas.fragments.BagFragment
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.recyclerview.widget.RecyclerView
+import com.example.app_vagas.model.Vaga
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
+
+    val listaVagas = ArrayList<Vaga>()
+    private lateinit var adapter: ListaVagaAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
-        bottomNavigationView.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.navigation_filter -> {
-                    loadFragment(FilterFragment())
-                    removeRecyclerView()
-                    true
-                }
-                R.id.navigation_alert -> {
-                    loadFragment(NotificationFragment())
-                    removeRecyclerView()
-                    true
-                }
 
-                R.id.navigation_bag -> {
-                    loadFragment(BagFragment())
-                    addRecyclerView()
-                    true
-                }
-                else -> false
-            }
-        }
-
-        // usando a lista de vagas
+        // Configura RecyclerView
         val recyclerView: RecyclerView = findViewById(R.id.ID_ListaVagas)
-        recyclerView.adapter = ListaVagaAdapter(this, listOf(
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        adapter = ListaVagaAdapter(this, listaVagas)
+        recyclerView.adapter = adapter
+
+        // Adiciona uma vaga inicial
+        listaVagas.add(
             Vaga(
                 id = 1,
                 titulo = "Analista de Projetos de CRM Pleno",
                 descricao = "Descrição da vaga de analista de sistemas",
-                tipoVaga = "Tipo de vaga: Presencial",
-                horarioTrabalho = "Período de trabalho: Matutino",
-                modeloDeContratacao = "Modelo de contratação: CLT",
-                senioridade = "Senioridade: Pleno"
-            ),
-            Vaga(
-                id = 2,
-                titulo = "Analista de Sistemas",
-                descricao = "Descrição da vaga de analista de sistemas",
-                tipoVaga = "Tipo de vaga: Presencial",
-                horarioTrabalho = "Período de trabalho: Matutino",
-                modeloDeContratacao = "Modelo de contratação: CLT",
-                senioridade = "Senioridade: Assistente"
-            ),
-            Vaga(
-                id = 3,
-                titulo = "DBA Pleno",
-                descricao = "Descrição da vaga de analista de sistemas",
-                tipoVaga = "Tipo de vaga: Presencial",
-                horarioTrabalho = "Período de trabalho: Matutino",
-                modeloDeContratacao = "Modelo de contratação: CLT",
-                senioridade = "Senioridade: Júnior"
-            ),
-            Vaga(
-                id = 3,
-                titulo = "Analista Salesforce",
-                descricao = "Descrição da vaga de analista de sistemas",
-                tipoVaga = "Tipo de vaga: Presencial",
-                horarioTrabalho = "Período de trabalho: Matutino",
-                modeloDeContratacao = "Modelo de contratação: CLT",
-                senioridade = "Senioridade: Estágio"
-            ),
-            Vaga(
-                id = 3,
-                titulo = "Marketing Digital",
-                descricao = "Descrição da vaga de analista de sistemas",
-                tipoVaga = "Tipo de vaga: Presencial",
-                horarioTrabalho = "Período de trabalho: Matutino",
-                modeloDeContratacao = "Modelo de contratação: CLT",
-                senioridade = "Senioridade: Estágio"
-            ),
-            Vaga(
-                id = 3,
-                titulo = "Desenvolvedor Backend Java",
-                descricao = "Descrição da vaga de analista de sistemas",
-                tipoVaga = "Tipo de vaga: Presencial",
-                horarioTrabalho = "Período de trabalho: Matutino",
-                modeloDeContratacao = "Modelo de contratação: CLT",
-                senioridade = "Senioridade: Estágio"
+                tipoVaga = "Presencial",
+                horarioTrabalho = "Matutino",
+                modeloDeContratacao = "CLT",
+                senioridade = "Pleno"
             )
-        ))
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        )
+        adapter.notifyDataSetChanged()
+
+        // Botão para adicionar nova vaga
+        val btnAddVaga: Button = findViewById(R.id.btnAddVaga)
+        btnAddVaga.setOnClickListener {
+            showAddVagaDialog()
+        }
     }
 
-    private fun loadFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
-            .commit()
+    private fun showAddVagaDialog() {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.add_vaga, null)
+
+        // Configura os Spinners
+        val tiposVaga = arrayOf("Presencial", "Híbrido", "Remoto")
+        val horariosTrabalho = arrayOf("Matutino", "Vespertino", "Noturno")
+        val modelosContratacao = arrayOf("PJ", "CLT")
+        val senioridades = arrayOf("Estágio", "Assistente", "Júnior", "Pleno", "Sênior")
+
+        val tipoVagaAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, tiposVaga)
+        val horarioTrabalhoAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, horariosTrabalho)
+        val modeloContratacaoAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, modelosContratacao)
+        val senioridadeAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, senioridades)
+
+        tipoVagaAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        horarioTrabalhoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        modeloContratacaoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        senioridadeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+        val spinnerTipoVaga: Spinner = dialogView.findViewById(R.id.spinnerTipoVaga)
+        val spinnerHorarioTrabalho: Spinner = dialogView.findViewById(R.id.spinnerHorarioTrabalho)
+        val spinnerModeloContratacao: Spinner = dialogView.findViewById(R.id.spinnerModeloContratacao)
+        val spinnerSenioridade: Spinner = dialogView.findViewById(R.id.spinnerSenioridade)
+
+        spinnerTipoVaga.adapter = tipoVagaAdapter
+        spinnerHorarioTrabalho.adapter = horarioTrabalhoAdapter
+        spinnerModeloContratacao.adapter = modeloContratacaoAdapter
+        spinnerSenioridade.adapter = senioridadeAdapter
+
+        val dialogBuilder = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setTitle("Adicionar Vaga")
+            .setPositiveButton("Adicionar") { _, _ ->
+                val edtTitulo: EditText = dialogView.findViewById(R.id.edtTitulo)
+                val edtDescricao: EditText = dialogView.findViewById(R.id.edtDescricao)
+
+                val tituloVaga = edtTitulo.text.toString()
+                val descricaoVaga = edtDescricao.text.toString()
+                val tipoVaga = spinnerTipoVaga.selectedItem.toString()
+                val horarioTrabalho = spinnerHorarioTrabalho.selectedItem.toString()
+                val modeloContratacao = spinnerModeloContratacao.selectedItem.toString()
+                val senioridade = spinnerSenioridade.selectedItem.toString()
+
+                if (tituloVaga.isNotEmpty()) {
+                    // Adiciona a nova vaga na lista
+                    val novaVaga = Vaga(
+                        id = (listaVagas.size + 1).toLong(),
+                        titulo = tituloVaga,
+                        descricao = descricaoVaga,
+                        tipoVaga = tipoVaga,
+                        horarioTrabalho = horarioTrabalho,
+                        modeloDeContratacao = modeloContratacao,
+                        senioridade = senioridade
+                    )
+                    listaVagas.add(novaVaga)
+                    adapter.notifyDataSetChanged() // Atualiza a lista
+                }
+            }
+            .setNegativeButton("Cancelar", null)
+
+        val dialog = dialogBuilder.create()
+        dialog.show()
     }
 
-    private fun removeRecyclerView(){
-        val recyclerView = findViewById<RecyclerView>(R.id.ID_ListaVagas)
-        recyclerView.visibility = View.GONE
-    }
-
-    private fun addRecyclerView(){
-        val recyclerView = findViewById<RecyclerView>(R.id.ID_ListaVagas)
-        recyclerView.visibility = View.VISIBLE
+    override fun updateBottomNavigationSelection() {
+        val fragment = supportFragmentManager.findFragmentByTag("BOTTOM_NAVIGATION_FRAGMENT") as? BottomNavigationFragment
+        fragment?.updateSelectedItem(R.id.navigation_bag)
     }
 }

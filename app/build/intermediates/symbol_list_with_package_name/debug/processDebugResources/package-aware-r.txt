@@ -3224,11 +3224,14 @@ id beginning
 id bestChoice
 id blocking
 id bottom
+id bottomNavigationFragment
 id bottomNavigationView
+id bottom_navigation_bar
 id bounce
 id bounceBoth
 id bounceEnd
 id bounceStart
+id btnAddVaga
 id buttonPanel
 id cache_measures
 id callMeasure
@@ -3304,6 +3307,8 @@ id east
 id edge
 id edit_query
 id edit_text_id
+id edtDescricao
+id edtTitulo
 id elastic
 id embed
 id end
@@ -3556,6 +3561,10 @@ id snapMargins
 id south
 id spacer
 id special_effects_controller_view_tag
+id spinnerHorarioTrabalho
+id spinnerModeloContratacao
+id spinnerSenioridade
+id spinnerTipoVaga
 id spline
 id split_action_bar
 id spread
@@ -3768,9 +3777,11 @@ layout abc_search_dropdown_item_icons_2line
 layout abc_search_view
 layout abc_select_dialog_material
 layout abc_tooltip
+layout activity_bag
 layout activity_filter
 layout activity_main
 layout activity_notification
+layout add_vaga
 layout bottom_navigation_bar
 layout custom_dialog
 layout design_bottom_navigation_item
